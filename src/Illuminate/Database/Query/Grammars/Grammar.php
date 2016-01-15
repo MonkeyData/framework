@@ -170,9 +170,18 @@ class Grammar extends BaseGrammar {
 
         // $second = $clause['where'] ? '?' : $this->wrap($clause['second']);
         // it should be stay, needs to for Where function in JoinClauses
-        $isIn = $clause['operator'] === 'in' || $clause['operator'] === 'not in';
-        $second = $clause['where'] ? ($isIn ? '(' . join(',', array_fill(0, count($clause['second']), '?')) . ')' : '?') : $this->wrap($clause['second']);
+//        $isIn = $clause['operator'] === 'in' || $clause['operator'] === 'not in';
+//        $second = $clause['where'] ? ($isIn ? '(' . join(',', array_fill(0, count($clause['second']), '?')) . ')' : '?') : $this->wrap($clause['second']);
 
+        if ($clause['where']) {
+            if ($clause['operator'] === 'in' || $clause['operator'] === 'not in') {
+                $second = '(' . implode(', ', array_fill(0, $clause['second'], '?')) . ')';
+            } else {
+                $second = '?';
+            }
+        } else {
+            $second = $this->wrap($clause['second']);
+        }
         return "{$clause['boolean']} $first {$clause['operator']} $second";
     }
 
